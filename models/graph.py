@@ -16,7 +16,7 @@ class Graph:
         self.adjacency[conn.zone1_name].append(conn)#add connection to zone1 
         self.adjacency[conn.zone2_name].append(conn)#add connection to zone2
 
-    def get_neighors(self, zone_name: str ) -> list[Zone]:
+    def get_neighbors(self, zone_name: str ) -> list[Zone]:
         neighbors = []
         for conn in self.adjacency[zone_name]:
             if conn.zone1_name == zone_name:
@@ -24,4 +24,10 @@ class Graph:
             else:
                 neighbors.append(self.zones[conn.zone1_name])
         return neighbors
+    
+    def get_connection(self, z1: str, z2: str) ->Optional[Connection]:
+        for conn in self.adjacency[z1]:
+            if conn.zone1_name == z2 or conn.zone2_name == z2:
+                return conn
+        return None
     
