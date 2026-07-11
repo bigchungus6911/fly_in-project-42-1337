@@ -1,21 +1,27 @@
-from models.zone import Zone, ZoneType
-from models.connection import Connection
-from models.graph import Graph
+from __future__ import annotations
+import argparse
+import sys
 
-z1 = Zone(name="hub", x=0, y=0)
-z2 = Zone(name="roof1", x=3, y=4, zone_type=ZoneType.RESTRICTED, color="red")
-z3 = Zone(name="goal", x=10, y=10, color="yellow")
+from parser import parse_file
+from simulator import run_simulation
 
-c1 = Connection(zone1_name="hub", zone2_name="roof1")
-c2 = Connection(zone1_name="roof1", zone2_name="goal", max_link_capacity=2)
 
-g = Graph()
-g.add_zone(z1)
-g.add_zone(z2)
-g.add_zone(z3)
-g.add_connection(c1)
-g.add_connection(c2)
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Fly-in drone simulation")
+    parser.add_argument("map_file", help="Path to map file")
+    parser.add_argument("--capacity-info", action="store_true", help="Show capacity usage each turn")
+    args = parser.parse_args()
 
-print(g.get_neighbors("hub"))
-print(g.get_neighbors("roof1"))
-print(g.get_connection("hub", "roof1"))
+    try:
+        graph, nb_drones = parse_file(args.map_file)
+        lines = run_simulation(graph, nb_drones, show_capacity=args.capacity_info)
+        for line in lines:
+            print(line)
+        return 0
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
